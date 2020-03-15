@@ -1,0 +1,23 @@
+---
+- hosts: local
+  tasks:
+
+    #- name: debug
+     ## debug: msg={{ ansible_os_family }}
+
+    - name: install epel-release
+      yum:
+        name: epel-release
+        state: installed
+        update_cache: yes
+
+    - name: set osType
+      set_fact:
+        osType: rhel
+        
+      when: ansible_os_family == 'RedHat'
+
+
+    - name: download and install zabbix proxy with {{ database  }} for {{ version }} version
+      yum:
+        name: https://repo.zabbix.com/zabbix/{{ majorversion }}.{{ minorversion }}/{{ osType }}/7/x86_64/zabbix-proxy-{{ version }}.el7.x86_64.rpm
