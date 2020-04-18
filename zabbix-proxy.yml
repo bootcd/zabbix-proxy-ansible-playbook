@@ -57,7 +57,9 @@
         protocol: tcp
         match: tcp
 
-    - name: start zabbix-proxy service
+    - name: start and enable zabbix-proxy service
       service:
         name: zabbix-proxy
         state: started
+        enabled: yes
+      
