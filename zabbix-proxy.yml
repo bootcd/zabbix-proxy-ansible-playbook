@@ -2,15 +2,22 @@
 - hosts: local
   tasks:
 
-    #- name: debug
-     ## debug: msg={{ ansible_os_family }}
-
     - name: install epel-release
       yum:
         name: epel-release
         state: installed
         update_cache: yes
 
+    - name: install needful software
+      yum:
+        name:
+          - fping
+          - net-tools
+          - wget
+          - nano
+        state: installed        
+
+          
     - name: set osType
       set_fact:
         osType: rhel
@@ -21,3 +28,36 @@
     - name: download and install zabbix proxy with {{ database  }} for {{ version }} version
       yum:
         name: https://repo.zabbix.com/zabbix/{{ majorversion }}.{{ minorversion }}/{{ osType }}/7/x86_64/zabbix-proxy-{{ version }}.el7.x86_64.rpm
+
+
+
+    - name: DB works - unzip DB schema
+      shell: gunzip /usr/share/doc/zabbix-proxy-sqlite3-4.2.8/schema.sql.gz
+ 
+    - name: DB works - make folder for DB file
+      shell: mkdir /var/lib/sqlite
+
+    - name: DB works - copy schema to DB place
+      shell: sqlite3 /var/lib/sqlite/zabbix.db < /usr/share/doc/zabbix-proxy-sqlite3-4.2.8/schema.sql
+       
+    - name: DB works - set rights to zabbix user for DB folder and file
+      shell: chown -R zabbix:zabbix /var/lib/sqlite
+          
+    - name: copy zabbix-proxy.conf
+      template:
+        src: zabbix_proxy.j2
+        dest: /etc/zabbix/zabbix_proxy.conf
+
+    - name: add iptables rules for 10051 port
+      iptables:
+        chain: INPUT
+        action: append
+        jump: ACCEPT
+        destination_port: 10051
+        protocol: tcp
+        match: tcp
+
+    - name: start zabbix-proxy service
+      service:
+        name: zabbix-proxy
+        state: started
