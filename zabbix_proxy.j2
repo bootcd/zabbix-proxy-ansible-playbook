@@ -46,7 +46,7 @@ ServerPort=10051
 # Default:
 # Hostname=
 
-Hostname= {{ inventory_hostname }}
+Hostname={{ ZabbixProxyName }}
 
 ### Option: HostnameItem
 #	Item used for generating Hostname if it is undefined.
@@ -266,7 +266,7 @@ DBUser=zabbix
 # Mandatory: no
 # Range: 0-1000
 # Default:
-# StartPollers=5
+StartPollers={{ StartPollers }}
 
 ### Option: StartIPMIPollers
 #	Number of pre-forked instances of IPMI pollers.
@@ -479,7 +479,7 @@ SNMPTrapperFile=/var/log/snmptrap/snmptrap.log
 # Default:
 # Timeout=3
 
-Timeout=4
+Timeout={{ Timeout }}
 
 ### Option: TrapperTimeout
 #	Specifies how many seconds trapper may spend processing new data.
